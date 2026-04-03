@@ -166,7 +166,12 @@ public class PDFCardServiceImpl implements CardGeneratorService {
 				templateTypeCode = additionalAttributes.get(TEMPLATE_TYPE_CODE).toString();
 			}
 			if (credentialType.equalsIgnoreCase("qrcode")) {
-				boolean isQRcodeSet = setQrCode(decryptedCredentialJson.toString(), attributes,isPhotoSet);
+				boolean isQRcodeSet = false;
+				try {
+					isQRcodeSet = setQrCode(decryptedCredentialJson.toString(), attributes,isPhotoSet);
+				} catch (QrcodeGenerationException e) {
+					logger.error("QR code generation failed proceeding without QR: {}", e.getMessage());
+				}
 				InputStream uinArtifact = templateGenerator.getTemplate(templateTypeCode, attributes, templateLang);
 				pdfbytes = generateUinCard(uinArtifact, password);
 			} else {
@@ -176,7 +181,12 @@ public class PDFCardServiceImpl implements CardGeneratorService {
 				setTemplateAttributes(decryptedCredentialJson, attributes);
 				// putting additional attribute for vid card
 				attributes.put(IdType.UIN.toString(), uin);
-				boolean isQRcodeSet = setQrCode(decryptedCredentialJson.toString(), attributes,isPhotoSet);
+				boolean isQRcodeSet = false;
+				try {
+					isQRcodeSet = setQrCode(decryptedCredentialJson.toString(), attributes,isPhotoSet);
+				} catch (QrcodeGenerationException e) {
+					logger.error("QR code generation failed, proceeding without QR: {}", e.getMessage());
+				}
 				if (!isQRcodeSet) {
 					logger.debug(DigitalCardServiceErrorCodes.QRCODE_NOT_SET.name());
 				}
@@ -191,11 +201,7 @@ public class PDFCardServiceImpl implements CardGeneratorService {
 			}
 
 		}
-
-		catch (QrcodeGenerationException e) {
-			logger.error(DigitalCardServiceErrorCodes.QRCODE_NOT_GENERATED.getErrorMessage(), e);
-			throw e;
-		}  catch (PDFGeneratorException e) {
+		catch (PDFGeneratorException e) {
 			logger.error(DigitalCardServiceErrorCodes.PDF_NOT_GENERATED.getErrorMessage() ,e);
 			throw e;
 		}catch (JsonParseException | JsonMappingException e) {
