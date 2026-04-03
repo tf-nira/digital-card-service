@@ -13,6 +13,8 @@
 	<artifactId>digital-card-service</artifactId>
 	<version>1.2.0.1</version>
 	<name>digital-card-service</name>
+	<url>https://github.com/mosip/digital-card-service</url>
+	<description>MOSIP Digital Card Service</description>
 
 	<properties>
 		<maven.compiler.source>11</maven.compiler.source>
