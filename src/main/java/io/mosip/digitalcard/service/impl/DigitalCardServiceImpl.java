@@ -269,7 +269,7 @@ public class DigitalCardServiceImpl implements DigitalCardService {
             if (obj instanceof JSONArray) {
                 // JSONArray node = JsonUtil.getJSONArray(demographicIdentity, value);
                 SimpleType[] jsonValues = Utility.mapJsonNodeToJavaObject(SimpleType.class, (JSONArray) obj);
-                uinCardPd = uinCardPd.concat(getFormattedPasswordAttribute(getParameter(jsonValues, templateLang)).substring(0,4));
+                uinCardPd = uinCardPd.concat(getFormattedPasswordAttribute(getParameter(jsonValues, templateLang)).substring(0,2));
             } else if (object instanceof org.json.simple.JSONObject) {
                 org.json.simple.JSONObject json = (org.json.simple.JSONObject) object;
                 uinCardPd = uinCardPd.concat((String) json.get(VALUE));
