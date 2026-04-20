@@ -21,6 +21,7 @@ on:
       - MOSIP*
       - release*
       - tf_develop
+      - tf_nira_preprod
 
 jobs:
   build-maven-digitalcard:
