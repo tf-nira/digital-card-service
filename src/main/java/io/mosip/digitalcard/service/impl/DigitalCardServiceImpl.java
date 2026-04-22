@@ -274,7 +274,11 @@ public class DigitalCardServiceImpl implements DigitalCardService {
                 org.json.simple.JSONObject json = (org.json.simple.JSONObject) object;
                 uinCardPd = uinCardPd.concat((String) json.get(VALUE));
             } else {
-                uinCardPd = uinCardPd.concat(getFormattedPasswordAttribute((String) object.toString()).substring(0,4));
+                String value = object.toString();
+                if ("dateOfBirth".equalsIgnoreCase(key)) {
+                    value = normalizeDate(value);
+                }
+                uinCardPd = uinCardPd.concat(getFormattedPasswordAttribute(value).substring(0,4));
             }
         }
         return uinCardPd.toUpperCase();
@@ -318,5 +322,23 @@ public class DigitalCardServiceImpl implements DigitalCardService {
     public void loginErrorDetails(String rid, String errorMsg){
         digitalCardTransactionRepository.updateErrorTransactionDetails(rid,"ERROR",errorMsg,LocalDateTime.now(),Utility.getUser());
     }
+    
+    public String normalizeDate(String dob) {
+    try {
+        // Case 1: dd/MM/yyyy or dd-MM-yyyy→ convert to yyyy
+       if (dob.matches("\\d{2}[-/]\\d{2}[-/]\\d{4}")) {
+            String[] parts = dob.split("[-/]");
+            return parts[2]; // year
+        }
+        // Case 2: yyyy/MM/dd or yyyy-MM-dd → already correct
+        if (dob.matches("\\d{4}[-/]\\d{2}[-/]\\d{2}")) {
+            return dob.substring(0, 4);
+        }
+        // fallback
+        return dob;
+    } catch (Exception e) {
+        return dob; // safe fallback
+    }
+}
 
 }
