@@ -22,6 +22,7 @@ on:
       - release*
       - tf_develop
       - tf_nira_preprod
+      - tf_nira_preprod_temp
 
 jobs:
   build-maven-digitalcard:
