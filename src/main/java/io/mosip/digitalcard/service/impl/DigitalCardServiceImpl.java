@@ -37,6 +37,8 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.regex.Pattern;
+
 
 /**
  * The DigitalCardServiceImpl.
@@ -106,11 +108,16 @@ public class DigitalCardServiceImpl implements DigitalCardService {
     @Value("${mosip.template-language}")
     private String templateLang;
 
+    private static final Pattern UUID_PATTERN =
+    	    java.util.regex.Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
 
+    
     Logger logger = DigitalCardRepoLogger.getLogger(DigitalCardController.class);
 
     public void generateDigitalCard(String credential, String credentialType,String dataShareUrl,String eventId,String transactionId,Map<String,Object> additionalAttributes) {
-        boolean isGenerated = false;
+    	logger.info("DEBUG rid-fix: eventId={}, transactionId={}", eventId, transactionId);
+    	
+    	boolean isGenerated = false;
         String decryptedCredential=null;
         String password=null;
         String rid=null;
@@ -122,6 +129,11 @@ public class DigitalCardServiceImpl implements DigitalCardService {
             JSONObject jsonObject = new org.json.JSONObject(decryptedCredential);
             JSONObject decryptedCredentialJson = jsonObject.getJSONObject("credentialSubject");
             rid=getRid(decryptedCredentialJson.get("id"));
+            
+            if (transactionId != null && !isUuid(transactionId)) {
+            	rid = transactionId.replaceFirst("-PDF$", "");
+            }
+            
             if (verifyCredentialsFlag){
                 logger.info("Configured received credentials to be verified. Flag {}", verifyCredentialsFlag);
                 boolean verified =credentialsVerifier.verifyCredentials(decryptedCredential);
@@ -340,5 +352,9 @@ public class DigitalCardServiceImpl implements DigitalCardService {
         return dob; // safe fallback
     }
 }
+    
+    private boolean isUuid(String value) {
+        return UUID_PATTERN.matcher(value).matches();
+    }
 
 }
