@@ -37,6 +37,8 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.regex.Pattern;
+
 
 /**
  * The DigitalCardServiceImpl.
@@ -106,7 +108,7 @@ public class DigitalCardServiceImpl implements DigitalCardService {
     @Value("${mosip.template-language}")
     private String templateLang;
 
-    private static final java.util.regex.Pattern UUID_PATTERN =
+    private static final Pattern UUID_PATTERN =
     	    java.util.regex.Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
 
     
